@@ -1,0 +1,230 @@
+/*user defined functions that will accept product id, year and will return yearly sales for that product*/
+
+set serveroutput on;
+/* function to get the sold products*/
+create or replace function products_number(pno1 in varchar2) return varchar2 is
+prod_number varchar2(10);
+begin 
+select pno  into prod_number  from orderline
+where (pno1 = pno);
+return prod_number;
+end;
+/
+/* function to geth the year of sale*/
+create or replace function saless_year(pno1 in varchar2) return varchar2 is 
+sale_yr varchar2(10);
+begin
+select substr(cust_order_date, 8,5) into sale_yr from products join orderline 
+on products.pno = orderline.pno join orders
+on orders.ono = orderline.ono
+where products.pno = pno1;
+return sale_yr;
+end;
+/
+select products_number('P130'), saless_year('P130')
+from DUAL;
+
+"PRODUCTS_NUMBER('P130')"	"SALESS_YEAR('P130')"
+"P130"				"99"
+
+/*a user defined functions that will accept product id, month, and year. This function then will return total sales for that product for that month of that year*/	
+
+set serveroutput on;
+/* function to get the sold products*/
+create or replace function products_number(pno1 in varchar2) return varchar2 is
+prod_number varchar2(10);
+begin 
+select pno  into prod_number  from orderline
+where (pno1 = pno);
+return prod_number;
+end;
+/
+/* function to geth the year of sale*/
+create or replace function saless_year(pno1 in varchar2) return varchar2 is 
+sale_yr varchar2(10);
+begin
+select substr(cust_order_date, 8,5) into sale_yr from products join orderline 
+on products.pno = orderline.pno join orders
+on orders.ono = orderline.ono
+where products.pno = pno1;
+return sale_yr;
+end;
+/
+
+create or replace function saless_month(pno1 in varchar2) return varchar2 is 
+sale_mth varchar2(10);
+begin
+select substr(cust_order_date, 4,3) into sale_mth from products join orderline 
+on products.pno = orderline.pno join orders
+on orders.ono = orderline.ono
+where products.pno = pno1;
+return sale_mth;
+end;
+/
+
+create or replace function total_sales(pno1 in varchar2) return number is 
+sale_total number;
+begin
+select order_qty*prod_price into sale_total from products join orderline 
+on products.pno = orderline.pno join orders
+on orders.ono = orderline.ono
+where products.pno = pno1;
+return sale_total;
+end;
+/
+
+SELECT products_number('P130'), saless_year('P130'), saless_month('P130'), total_sales('P130')
+FROM DUAL;
+"PRODUCTS_NUMBER('P130')"	"SALESS_YEAR('P130')"	"SALESS_MONTH('P130')"TOTAL_SALES('P130')"
+"P130"					"99"			"APR"			4950
+
+/*a user defined functions that will accept product category id and will return yearly sales for that product category*/
+set serveroutput on
+
+create or replace function cat_sales(catno1 in number) return number is 
+catsales number;
+begin
+select sum(order_qty * prod_price)  into catsales
+from prodcategory join products 
+on prodcategory.catno = products.catno join orderline
+on orderline.pno = products.pno join orders
+on orders.ono = orderline.ono
+where catno1 = products.catno
+and orderline.pno = products.pno
+and orders.ono = orderline.ono;
+return catsales;
+end;
+/
+select cat_sales(230)
+from dual;
+
+"CAT_SALES(230)"
+5750
+
+
+/*a user defined function that will accept a vendor id and year and it will return number if services they have provided to us*/
+set serveroutput on;
+
+create or replace function vendor_id(proven1 in number) return number is 
+vend_no number;
+begin
+select distinct vno into vend_no 
+from prodvendor
+where proven = proven1;
+return vend_no;
+end;
+/
+create or replace function vend_year(order_date1 in varchar2) return varchar2 is
+vend_yr varchar2(10);
+begin
+select substr(order_date,8,5) into vend_yr
+from prodvendor 
+where   order_date1 = order_date;
+return vend_yr;
+end;
+/
+
+create or replace function vend_serve_count(proven1 in number) return number is
+vend_services number;
+begin
+select count( vno) into vend_services
+from prodvendor 
+where   proven1 = proven;
+return vend_services;
+end;
+
+/
+
+select  distinct vendor_id(901), count(*), vend_year(order_date)
+from prodvendor
+group by  vendor_id(901), vend_year(order_date) ;
+
+"VENDOR_ID(901)"	"COUNT(*)"	"VEND_YEAR(ORDER_DATE)"
+80			6			"17"
+
+
+/*a user defined function that will accept a order number and will return number of people in that order*/
+set serveroutput on;
+
+create or replace function count_people(ono1 in number) return number is
+people_num number;
+begin
+select  count(ono) into people_num
+from orderline
+where ono = ono1;
+return people_num;
+end;
+/
+
+select  count_people(1007) 
+from dual;
+
+"COUNT_PEOPLE(1007)"
+1
+
+/*a user defined function that will accept employee number and will return the current salary*/
+set serveroutput on;
+
+create or replace function emp_posi(eno1 in number) return number is 
+emps_pos number(20);
+begin 
+select salary into emps_pos 
+from salary join employee_position
+on salary.position_no = employee_position.position_no join employees
+on employee_position.position_no = employees.position_no
+where eno1 = employees.eno;
+return emps_pos;
+end;
+/
+
+select  emp_posi(2)
+from dual;
+
+"EMP_POSI(2)"
+600000
+
+/*a user defined function that will accept employee number and will return the current job title*/
+set serveroutput on;
+
+create or replace function emp_posi(eno1 in number) return varchar2 is 
+emps_pos varchar2(20);
+begin 
+select description into emps_pos 
+from employee_position join employees
+on employee_position.position_no = employees.position_no
+where eno1 = eno;
+return emps_pos;
+end;
+/
+
+select emp_posi(2)
+from dual;
+
+"EMP_POSI(2)"
+"CEO"
+
+
+/*a user defined function that will accept product number and will return the average customer satisfaction/or evaluation rating for that product*/
+create or replace function prod_feedback(pno1 in varchar2) return number is 
+prodfeed number;
+begin
+select avg(sum(rating_score)) into prodfeed
+from feedbacks join event on 
+feedbacks.evno = event.evno join products
+on event.pno = products.pno
+where pno1 = products.pno
+and feedbacks.evno = event.evno 
+and event.pno = products.pno
+group by products.pno;
+return prodfeed;
+end;
+/
+select prod_feedback('P122')
+from dual;
+
+"PROD_FEEDBACK('P122')"
+5
+
+
+
+

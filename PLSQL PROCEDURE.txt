@@ -1,0 +1,160 @@
+/*a user defined procedure that will accept product id, year and will return yearly sales for that product*/
+set serveroutput on;
+create or replace procedure prod_year_sales(pno1 in varchar2) is
+begin
+dbms_output.put_line('prod_no         prod_name                          Sales_year');
+dbms_output.put_line('--------         -------------------------          ---------');
+for a in (
+    select  orderline.pno, prod_name, substr(cust_order_date, 8, 3) as sales_year
+    from products join orderline
+    on products.pno = orderline.pno join orders
+    on orders.ono = orderline.ono
+    WHERE orderline.pno = pno1)
+    
+loop
+dbms_output.put_line(rpad(a.pno,14) || rpad(a.prod_name,14) || lpad(a.sales_year,26));
+end loop;
+end;
+/   
+begin
+prod_year_sales('P130');
+end;
+
+prod_no         prod_name                          Sales_year
+--------         -------------------------          ---------
+P130          Microsoft Cont                        99
+
+
+/*a user defined procedure that will accept product id, month, and year. This function then will return total sales for that product for that month of that year*/
+set serveroutput on;
+create or replace procedure prod_year_sales(pno1 in varchar2) is
+begin
+dbms_output.put_line('prod_no         prod_name                   Sales_year    Sales_Month    Total_sales');
+dbms_output.put_line('--------         -----------------          ---------     -----------    -----------');
+for a in (
+    select  orderline.pno, prod_name, substr(cust_order_date, 8, 3) as sales_year,  
+    substr(cust_order_date, 4, 3) as sales_month, (prod_price * order_qty) as total_sales
+    from products join orderline
+    on products.pno = orderline.pno join orders
+    on orders.ono = orderline.ono
+    WHERE orderline.pno = pno1)
+    
+loop
+dbms_output.put_line(rpad(a.pno,14) || rpad(a.prod_name,14) || lpad(a.sales_year,20) || lpad(a.sales_month,15) || lpad(a.total_sales, 14));
+end loop;
+end;
+/   
+begin
+prod_year_sales('P130');
+end;
+prod_no         prod_name                   Sales_year    Sales_Month    Total_sales
+--------         -----------------          ---------     -----------    -----------
+P130          Microsoft Cont                  99            APR          4950
+
+/*a user defined procedure that will accept product category id and will return yearly sales for that product category*/
+set serveroutput on;
+create or replace procedure vendor_year_sales(vno1 in number) is
+begin
+dbms_output.put_line('vendor_no        total_service              Year_Order');
+dbms_output.put_line('--------         -----------------          ----------');
+for a in (
+    select  vno, count(*) as total_service, substr(order_date, 8, 3) as Year_order
+    from prodvendor
+    where vno = vno1
+    group by vno, substr(order_date, 8, 3))
+    
+loop
+dbms_output.put_line(rpad(a.vno, 18) || rpad(a.total_service,16) || lpad(a. Year_order,20));
+end loop;
+end;
+/   
+begin
+vendor_year_sales(80);
+end;
+vendor_no        total_service              Year_Order
+--------         -----------------      	    ----------
+80                1                            		     17
+
+/*a user defined function that will accept a order number and will return number of people in that order*/
+set serveroutput on;
+create or replace procedure order_customers(ono1 in number) is
+begin
+dbms_output.put_line('order_no        total_customers   ');
+dbms_output.put_line('--------         -----------------');
+for a in (
+    select  orderline.ono as order_no, count(orders.cno) as total_customer
+    from orders join orderline
+    on orders.ono = orderline.ono
+    where orders.ono = orderline.ono
+    and orderline.ono = ono1
+    group by orderline.ono)
+    
+loop
+dbms_output.put_line(rpad(a.order_no, 18) || rpad(a.total_customer,16));
+end loop;
+end;
+/   
+begin
+order_customers(1007);
+end;
+
+
+order_no        total_customers   
+--------         -----------------
+1007              1    
+
+
+/*a user defined procedure that will accept employee number and will return the current salary*/
+set serveroutput on;
+create or replace procedure emp_salary(eno1 in number) is
+begin
+dbms_output.put_line('employee_no        salary          ');
+dbms_output.put_line('-----------       -----------------');
+for a in (
+    select  employees.eno as employee_no, salary
+    from salary join employee_position
+    on salary.position_no = salary.position_no join employees
+    on employees.position_no = employee_position.position_no
+    where salary.position_no = employee_position.position_no
+    and employees.eno = eno1
+    and rownum <=20
+    order by  employees.eno asc)
+    
+loop
+dbms_output.put_line(rpad(a.employee_no, 18) || rpad(a.salary,16));
+end loop;
+end;
+/   
+begin
+emp_salary(3);
+end;
+
+
+employee_no        salary          
+-----------       -----------------
+3                 350000    
+
+/*a user defined function that will accept employee number and will return the current job title*/
+set serveroutput on;
+create or replace procedure emp_position(eno1 in number) is
+begin
+dbms_output.put_line('employee_no       Position         ');
+dbms_output.put_line('-----------       -----------------');
+for a in (
+    select  employees.eno as employee_no, description
+    from employee_position join employees
+    on employees.position_no = employee_position.position_no
+    where rownum <= 20
+    and employees.eno = eno1 )
+    
+loop
+dbms_output.put_line(rpad(a.employee_no, 18) || rpad(a.description,16));
+end loop;
+end;
+/   
+begin
+emp_position(2);
+end;
+employee_no       Position         
+-----------       -----------------
+2                 CEO             

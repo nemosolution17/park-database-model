@@ -1,0 +1,268 @@
+
+/* list the customer firstname, lastname,city, order_no, and employee first, and rank by the customer order quantity*/
+
+select orders.ono, customers.cust_fname, customers.cust_lname, 
+customers.cust_city, employees.emp_fname, Rank() OVER ( ORDER BY orders.order_qty DESC) as Quantity_Rank
+from customers join orders 
+on orders.cno = customers.cno  join employees 
+on orders.eno = employees.eno
+where cust_state = 'MN';
+
+"ONO"		"CUST_FNAME"	"CUST_LNAME"	"CUST_CITY"	"EMP_FNAME"	"QUANTITY_RANK"
+1007		"Johnson"	"Roerig"	"Mankato"	"halle"		1
+1032		"Lee"		"Jensen"	"Brooklyn Park"	"halle"		2
+10607		"Lee"		"Julie"		"Edna"		"blank"		3
+1004		"Lee"		"Julie"		"Edna"		"halle"		4
+1002		"Lee"		"Julie"		"Edna"		"lee"		5
+1008		"Lee"		"Julie"		"Edna"		"halle"		6
+1065		"Johnson"	"Roerig"	"Mankato"	"blank"		7
+1064		"Lee"		"Julie"		"Edna"		"blank"		7
+10311		"Lee"		"Julie"		"Edna"		"blank"		7
+1005		"Lee"		"Julie"		"Edna"		"blank"		7
+1009		"Lee"		"Julie"		"Edna"		"blank"		7
+
+
+/* list the customer firstname, lastname,city, order_no, and sum of order quantity in the month of april*/
+
+select orders.ono, customers.cust_fname, customers.cust_lname, sum(order_qty)
+from customers join orders 
+on orders.cno = customers.cno  join employees 
+on orders.eno = employees.eno
+where cust_order_date lIKE '%APR%'
+group by orders.ono, customers.cust_fname, customers.cust_lname;
+
+"ONO"	"CUST_FNAME"	"CUST_LNAME"	"SUM(ORDER_QTY)"
+1009	"Lee"		"Julie"		2
+1010	"Watson"	"Al"		5
+1027	"Halle"		"Edward"	45
+1025	"Jenkins"	"Molly"		30
+1001	"Watson"	"Al"		7
+1026	"Watson"	"Al"		55
+1003	"Halle"		"Edward"	10
+1004	"Lee"		"Julie"		9
+1002	"Lee"		"Julie"		4
+1008	"Lee"		"Julie"		3
+1005	"Lee"		"Julie"		2
+1011	"Halle"		"Edward"	56
+1006	"Watson"	"Al"		2
+1007	"Johnson"	"Roerig"	90
+
+
+/* list the customer firstname,customer lastname initial (only the first letter of lastname) lastname,city, order_no, and sum of order quantity in the month of april*/
+
+select orders.ono, customers.cust_fname,substr(customers.cust_lname, 0,1)as customer_initial, sum(order_qty)
+from customers join orders 
+on orders.cno = customers.cno  join employees 
+on orders.eno = employees.eno
+where cust_order_date lIKE '%APR%'
+group by orders.ono, customers.cust_fname, substr(customers.cust_lname, 0,1);
+
+"ONO"	"CUST_FNAME"	"CUSTOMER_INITIAL"	"SUM(ORDER_QTY)"
+1011	"Halle"		"E"			56
+1009	"Lee"		"J"			2
+1025	"Jenkins"	"M"			30
+1026	"Watson"	"A"			55
+1027	"Halle"		"E"			45
+1004	"Lee"		"J"			9
+1001	"Watson"	"A"			7
+1005	"Lee"		"J"			2
+1006	"Watson"	"A"			2
+1008	"Lee"		"J"			3
+1010	"Watson"	"A"			5
+1007	"Johnson"	"R"			90
+1002	"Lee"		"J"			4
+1003	"Halle"		"E"			10
+
+
+/* spliting your output into 2, list the employee firstname, lastname, position description, where branch no is 100*/
+
+select EMP_LNAME, EMP_FNAME, DESCRIPTION,  NTILE(2) OVER (ORDER BY employees.position_no) as splits
+from employee_position join employees
+on employee_position.position_no = employees.position_no join branch 
+on branch.branch_no = employees.branch_no
+where employees.branch_no = 100;
+
+"EMP_LNAME"	"EMP_FNAME"	"DESCRIPTION"	"SPLITS"
+"james"		"Jade"		"CEO"		1
+"wade"		"Jadan"		"EXECUTIVE"	1
+"david"		"king"		"MANAGER"	1
+"suzan"		"david"		"SALES"		1
+"blaine"	"lucky"		"HR"		1
+"wu"		"obat"		"HR"		2
+"thomas"	"jinsely"	"HR"		2
+"julie"		"hazard"	"HR"		2
+"noran"		"joe"		"HR"		2
+
+
+/*print employee firstname, lastname, position description, branch city, and when the branch is in Mankato, print "The Branch is in Mankato"*/
+
+select EMP_LNAME, EMP_FNAME, DESCRIPTION, branch.city,
+CASE 
+    when branch.city IN 'MANKATO' THEN 'THE BRANCH IS IN MANKATO'
+END
+from employee_position join employees
+on employee_position.position_no = employees.position_no join branch 
+on branch.branch_no = employees.branch_no
+where employees.branch_no = 100;
+
+"EMP_LNAME"	"EMP_FNAME"	"DESCRIPTION"	"CITY"		"CASEWHENBRANCH.CITYIN'MANKATO'THEN'THEBRANCHISINMANKATO'END"
+"james"		"Jade"		"CEO"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+"wade"		"Jadan"		"EXECUTIVE"	"MANKATO"	"THE BRANCH IS IN MANKATO"
+"david"		"king"		"MANAGER"	"MANKATO"	"THE BRANCH IS IN MANKATO"
+"suzan"		"david"		"SALES"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+"noran"		"joe"		"HR"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+"thomas"	"jinsely"	"HR"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+"wu"		"obat"		"HR"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+"blaine"	"lucky"		"HR"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+"julie"		"hazard"	"HR"		"MANKATO"	"THE BRANCH IS IN MANKATO"
+
+
+/*List all product categories with their total sales and overall percent of their total sales */
+select products.prod_category, count(orderline.ordlino), round((count(orderline.pno))/(count(products.pno)) *100,2) AS PERCENTAGE_SALES, count(products.pno)
+FROM products full join orderline 
+on products.pno = orderline.pno
+group by products.prod_category;
+
+"PROD_CATEGORY"	"COUNT(ORDERLINE.ORDLINO)"	"PERCENTAGE_SALES"	"COUNT(PRODUCTS.PNO)"
+"Game"			3	  			 42.86			7
+"Beauty"		1				100			1
+"Software"		1				50			2
+"Computer"		0				0			1
+"TV"			0				0			3
+"Cable"			0				0			1
+
+/*List the top 25% percent of product in terms of total number of orders, number of orders, and number of customers visited them or used them*/
+select pno, count(orderline.ono), count(cno)
+from orderline join orders
+on orderline.ono = orders.ono
+where rownum = round(5 * 0.25)
+group by pno;
+
+"PNO"	"COUNT(ORDERLINE.ONO)"	"COUNT(CNO)"
+"P130"		1			1
+
+
+/*List all products, name, category, monthly sales (for all years), number of monthly visitors (for all years)*/
+select orderline.pno, prod_name, prod_category, cust_order_date, substr(cust_order_date,4,3), count(distinct( substr(cust_order_date,3,5)))
+from products join orderline 
+on products.pno = orderline.pno join orders
+on orders.ono = orderline.ono
+group by orderline.pno, prod_name, prod_category, cust_order_date;
+
+"PNO"	"PROD_NAME"		"PROD_CATEGORY"	"CUST_ORDER_DATE"	"SUBSTR(CUST_ORDER_DATE,4,3)"	"COUNT(DISTINCT(SUBSTR(CUST_ORDER_DATE,3,5)))"
+"P130"	"Microsoft Controller"	"Game"		27-APR-99		"APR"					1
+"P110"	"Microsoft Xbox Set"	"Game"		02-MAY-99		"MAY"					1
+"P122"	"flower"		"Beauty"	10-APR-99		"APR"					1
+"P190"	"Microsoft Windows"	"Software"	03-MAR-99		"MAR"					1
+"P120"	"Microfsoft Xbox"	"Game"		07-JAN-00		"JAN"					1
+
+/*List every customer number, customer full name (last name, first name), each customer yearly purchases*/
+select distinct orders.cno, cust_fname, cust_lname, substr(cust_order_date, 8,5) as Year_Purchase
+from customers  join orders
+on customers.cno = orders.cno
+order by orders.cno;
+
+"CNO"	"CUST_FNAME"	"CUST_LNAME"	"YEAR_PURCHASE"
+100	"Johnson"	"Roerig"	"99"
+101	"Watson"	"Al"		"00"
+101	"Watson"	"Al"		"99"
+102	"Lee"		"Julie"		"99"
+103	"Lee"		"Jensen"	"99"
+104	"Jenkins"	"Molly"		"99"
+105	"Halle"		"Edward"	"99"
+
+/*List those customers (customer number, last name, state) that their orders include more than one person*/
+select orders.cno, cust_lname, cust_fname, count(orders.cno)
+from customers join orders
+on customers.cno = orders.cno
+group by orders.cno, cust_lname, cust_fname
+having count(orders.cno) >1 ;
+
+"CNO"	"CUST_LNAME"	"CUST_FNAME"	"COUNT(ORDERS.CNO)"
+100	"Roerig"	"Johnson"	2
+105	"Edward"	"Halle"		4
+101	"Al"		"Watson"	14
+102	"Julie"		"Lee"		8
+
+/*List all product categories, product name, average number of visitors per month, and average of visitors for every year*/
+select prodcategory.catno, prod_name, count(orders.ono)
+from prodcategory join products
+on prodcategory.catno = products.catno join orderline
+on products.pno = orderline.pno join orders
+on orders.ono = orderline.ono
+group by prodcategory.catno, prod_name;
+
+
+"CATNO"	"PROD_NAME"		"COUNT(ORDERS.ONO)"
+230	"Microsoft Controller"	1
+235	"Microsoft Windows"	1
+230	"Microsoft Xbox Set"	1
+235	"flower"		1
+232	"Microfsoft Xbox"	1
+
+
+
+/*List all employee id, full name (last name, first name), job title, current salary, and number of years working for us*/
+select eno, emp_lname, emp_fname, description, salary, round((sysdate - emp_start_date)/365, 1) as  Years_worked
+from employees natural join employee_position natural join salary
+where emp_status = 'Active';
+
+"ENO"	"EMP_LNAME"	"EMP_FNAME"	"DESCRIPTION"	"SALARY"	"YEARS_WORKED"
+2	"james"		"Jade"		"CEO"		600000		0.5
+3	"wade"		"Jadan"		"EXECUTIVE"	350000		1.2
+4	"david"		"king"		"MANAGER"	230000		1.3
+5	"suzan"		"david"	"	SALES"		120000		1.5
+6	"noran"		"joe"		"HR"		80000		1.4
+7	"thomas"	"jinsely"	"HR"		80000		1.6
+8	"wu"		"obat"		"HR"		80000		1.5
+9	"blaine"	"lucky"		"HR"		80000		1.5
+10	"julie"		"hazard"	"HR"		80000		1.5
+11	"edward"	"kelly"		"HR"		80000		1.5
+12	"jenson"	"johnson"	"HR"		80000		1.5
+13	"jud"		"steve"		"HR"		80000		1.9
+14	"rudy"		"halle"		"HR"		80000		1.8
+27	"steve"		"james"		"CEO"		600000		1.4
+28	"adam"		"hank"		"CEO"		600000		1.4
+29	"dan"		"migos"		"CEO"		600000		1.4
+30	"monk"		"brandton"	"CEO"		600000		1.4
+
+
+/*List all employee id last name, number of months working for us, worked on number of different product categories. List only those employees that worked on more than one product category*/
+select employees.eno, emp_lname, round((sysdate - emp_start_date)/30.4167, 1) as  month_worked, 
+count(orders.eno) as product_engaged_no
+from employees join orders
+on employees.eno = orders.eno
+where employees.eno = orders.eno
+group by employees.eno, emp_lname,  round((sysdate - emp_start_date)/30.4167, 1);
+
+"ENO"	"EMP_LNAME"	"MONTH_WORKED"	"PRODUCT_ENGAGED_NO"
+16	"albert"		20.4		4
+13	"jud"			22.5		3
+14	"rudy"			21.4		15
+12	"jenson"		17.5		1
+15	"tina"			17.4		7
+
+
+/*List all vendor id, vendor name, vendor contact first name, vendor contact last name that have provided service to us more than once per year (only those years that provided more than once)*/
+select vendors.vno, ven_bus_name, veno_fname, veno_lname, count(prodvendor.vno)
+from vendor_employee join vendors
+on vendor_employee.veno = vendors.veno join prodvendor
+on prodvendor.vno = vendors.vno
+group by vendors.vno, ven_bus_name, veno_fname, veno_lname
+having count(prodvendor.vno) > 1;
+
+"VNO"	"VEN_BUS_NAME"	"VENO_FNAME"	"VENO_LNAME"	"COUNT(PRODVENDOR.VNO)"
+81	"Microsoft"	"wu"		"Hailey"	2
+
+/*For every product category, product name, list the average score (satisfaction/evaluation feedback) received from customers for every year that product is offered to our customers*/
+select category_name, prod_name, avg(rating_score)
+from prodcategory join products
+on products.catno = prodcategory.catno join event
+on event.pno = products.pno join feedbacks
+on event.evno = feedbacks.evno
+group by category_name, prod_name;
+
+"CATEGORY_NAME"	"PROD_NAME"		"AVG(RATING_SCORE)"
+"Software"	"Microfsoft Xbox"	5
+"TV"		"Samsung Memory Card"	4
+"Sport"		"flower"		5

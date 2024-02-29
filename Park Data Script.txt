@@ -1,0 +1,366 @@
+drop table customers cascade constraints ;
+drop table employees cascade constraints ;
+drop table products cascade constraints ;
+drop table orders cascade constraints ;
+drop table branch cascade constraints ;
+drop table vendors cascade constraints ;
+drop table vendor_employee cascade constraints ;
+drop table event cascade constraints ;
+drop table vendor_service cascade constraints ;
+drop table salary cascade constraints ;
+drop table employee_position cascade constraints ;
+drop table feedbacks cascade constraints ;
+drop table orderline cascade constraints ;
+drop table prodvendor cascade constraints ;
+drop table vendorprice cascade constraints ;
+
+
+
+create table BRANCH (
+	BRANCH_NO NUMBER(38,0) not null,
+	STREET VARCHAR2(30) null,
+	CITY VARCHAR2(15) not null,
+	STATE VARCHAR2(2) ,
+    	ZIP_NO NUMBER(38) ,
+	constraint BRANCH_BRANCHNO_PK primary key (BRANCH_NO) );
+
+insert into branch values	('100','3415 Olanwood Court Suite 202','MANKATO','MN','56001');
+insert into branch values	('101','307 W. Allegheny Avenue','SAINT PAUL','MN','55101');
+insert into branch values	('102','145 Laywers Row','ROCHESTER','MN','55901');
+insert into branch values	('103','1717 Arch Street','SPRINGFIELD','IL','62701');
+insert into branch values	('104','200 Pennsylvania, Suite 200','WASHINGTON','DC','20009');
+insert into branch values	('105','14714 Main Street','DOVER','DE','19901');
+insert into branch values	('106','13 Federal Street P.O Box 704','TALLAHASSEE','FL','32301');
+insert into branch values	('107','1300 N Lake Shore Dr.','HONOLULU','HI','96813');
+insert into branch values	('108','warren','JUNEAU','AK','99801');
+insert into branch values	('109','San Street','SACRAMENTO','CA','95814');
+insert into branch values	('110','Stewart Sreet','CARSON CITY','NV','89701');
+insert into branch values	('111','1050 Conn. Ave','SALEM','OR','97301');
+insert into branch values	('112','300 Virginia Ave, Suite 300','PHOENIX','AZ','85003');
+insert into branch values	('113','3567 Worthington Drive','DENVER','CO','80202');
+
+CREATE TABLE vendor_employee
+(veno integer primary key
+ ,veno_LName varchar2(20)
+ ,veno_FName varchar2(20)
+ ,veno_work_phone_no varchar2(20)
+ ,veno_mobile_phone_no varchar2(20)
+ ,veno_DOB DATE
+ ,veno_gender varchar2(2)
+);
+
+Insert into vendor_employee values	(501,'joe','noran','345-456-6754','245-456-6685','	6-Jun-90	','M');
+Insert into vendor_employee values	(502,'jinsely','Mike','345-456-6755','245-456-6686','	7-Jul-92	','M');
+Insert into vendor_employee values	(503,'Hailey','wu','345-456-6756','245-456-6687','	8-May-89	','F');
+Insert into vendor_employee values	(504,'Fumi','blaine','345-456-6757','245-456-6688','	9-Jun-82	','F');
+Insert into vendor_employee values	(505,'Bose','julie','345-456-6758','245-456-6689','	10-Jun-82	','F');
+Insert into vendor_employee values	(506,'Jacob','Deji','345-456-6759','245-456-6690','	11-Jun-96	','M');
+
+
+
+CREATE TABLE vendor_service
+(venos integer primary key
+ ,venos_name varchar2(100)
+ ,venos_description varchar2(100)
+);
+
+Insert into VENDOR_SERVICE values	(601,'supplying fishing equiment','provide the park fishing eqipments and fish foods');
+Insert into VENDOR_SERVICE values	(602,'supplying hicking equipment','provide the park hicking shoes and gagdets');
+Insert into VENDOR_SERVICE values	(603,'supplying energy drink','provide the park energy drinks like gatorade');
+Insert into VENDOR_SERVICE values	(604,'supplying running equipments','provide the park running shoes and heart monitor wrist watches');
+Insert into VENDOR_SERVICE values	(605,'supplying gardening tools','provide the the park shovels, seeds, and other gardening tools');
+Insert into VENDOR_SERVICE values	(606,'supply animal foods','provide various foods for animals in the park');
+	
+
+
+
+create table employee_position (
+        position_no integer primary key,
+        description varchar2(40)
+);
+
+Insert into employee_position values (11, 'CEO');
+Insert into employee_position values (12, 'EXECUTIVE');
+Insert into employee_position values (13,	'MANAGER');
+Insert into employee_position values (14,'	SALES');
+Insert into employee_position values (15, 'HR');
+
+create table salary(
+  salary_id integer not null primary key
+ ,salary number not null
+ ,position_no not null constraint salary_pros_fk references employee_position (position_no) 
+);
+
+Insert into SALARY values	(301,600000,11);
+Insert into SALARY values	(302,350000,12);
+Insert into SALARY values	(303,230000,13);
+Insert into SALARY values	(304,120000,14);
+Insert into SALARY values	(306,80000,15);
+
+
+
+CREATE TABLE vendors 
+(VNO integer primary key 
+ ,ven_Bus_name varchar2(20) 
+ ,ven_address  varchar2(20) 
+ ,ven_city varchar2(20)
+ ,ven_state varchar2(2)
+ ,ven_country varchar2(30)
+ ,ven_Phone_Number varchar2(20) 
+ ,ven_Fax_Number varchar2(20) 
+ ,ven_URL varchar2(30)
+ ,veno not null constraint vendors_prod_fk references vendor_employee (veno)
+ ,venos not null constraint vendors_prods_fk references vendor_service (venos)    
+)
+;
+
+Insert into VENDORS values	(80,'Apple','234 James ave','Mankato','MN','USA','345-876-8888','345-876-8898','www.apple.com',501,601);
+Insert into VENDORS values	(81,'Microsoft','21 Johnson ave','Toledo','MN','USA','345-876-8889','345-876-8899','www.microsoft.com',503,603);
+Insert into VENDORS values	(82,'Chevron','236 James ave','Edina','NY','USA','345-876-8890','345-876-8900','www.chevron.com',505,604);
+Insert into VENDORS values	(83,'Amazon','237 James ave','BEIJING','BJ','CHINA','345-876-8891','345-876-8901','www.amazon.com',501,605);
+Insert into VENDORS values	(84,'Oracle','238 James ave','Mankato','NJ','USA','345-876-8892','345-876-8902','www.oracle.com',506,606);
+
+
+
+
+create table products 
+( pno              varchar2(5) primary key 
+, prod_category    varchar2(20) 
+, prod_name        varchar2(50) not null 
+)
+;
+
+Insert into products values	('P130','Game','Microsoft Controller');
+Insert into products values	('P110','Game','Microsoft Xbox Set');
+Insert into products values	('P120','Game','Microfsoft Xbox');
+Insert into products values	('P140','Game','Samsung Memory Card');
+Insert into products values	('P200','Computer','Data Input');
+Insert into products values	('P190','Software','Microsoft Windows');
+Insert into products values	('P180','Software','Microsoft Office');
+Insert into products values	('P170','TV','Samsung TV');
+Insert into products values	('P160','TV','Sony TV');
+Insert into products values	('P150','Game','Sony Mario Game');
+Insert into products values	('P121','Cable','dish');
+Insert into products values	('P122','Beauty','flower');
+Insert into products values	('P123','Game','Xbox');
+Insert into products values	('P124','Game','Xbox2');
+Insert into products values	('P125','TV','TV');
+
+Create table ProdVendor
+(proven integer primary key
+ ,order_date DATE
+ ,expectedDelivery_date DATE
+ ,actualDelivery_date DATE
+ ,VendorQTY NUMBER
+ ,DeliveryPrice VARCHAR2(20)
+ ,vno not null constraint prodvendor_vend_fk references vendors (vno)
+ ,pno not null constraint prodvendor_prods_fk references products (pno)  
+);
+
+Insert into PRODVENDOR values	(901,'	19-Mar-17	','	25-May-17	','	26-Mar-17	',6789,400,80,'P130');
+Insert into PRODVENDOR values	(902,'	20-Jun-17	','	26-Mar-17	','	27-May-17	',24376,544,81,'P170');
+Insert into PRODVENDOR values	(903,'	21-May-17	','	16-Jun-17	','	28-May-17	',75843,324,82,'P130');
+Insert into PRODVENDOR values	(904,'	22-Apr-17	','	17-Mar-17	','	29-May-17	',8954,756,81,'P121');
+Insert into PRODVENDOR values	(905,'	23-May-17	','	18-Apr-17	','	30-May-17	',9812,655,84,'P160');
+Insert into PRODVENDOR values	(906,'	24-May-17	','	19-Jun-17	','	31-May-17	',7643,984,83,'P120');
+
+
+
+Create table VendorPrice
+(venprice integer primary key
+ ,VPRICE NUMBER(20)
+ ,vno not null constraint vendorPrice_vend_fk references vendors (vno)
+ ,pno not null constraint vendorPrice_prods_fk references products (pno) 
+);
+
+Insert into VENDORPRICE values	(401,1500,80,'P170');
+Insert into VENDORPRICE values	(402,5000,81,'P130');
+Insert into VENDORPRICE values	(403,490,82,'P121');
+Insert into VENDORPRICE values	(404,456,80,'P120');
+Insert into VENDORPRICE values	(405,556,83,'P170');
+Insert into VENDORPRICE values	(406,657,84,'P130');
+
+
+CREATE TABLE employees 
+(ENO integer primary key 
+ ,emp_fname varchar2(20) 
+ ,emp_lname  varchar2(20) 
+ ,emp_gender varchar2(1)
+ ,emp_start_date DATE
+ ,emp_end_date DATE
+ ,emp_work_phone_no varchar2(20)
+ ,emp_home_phone_no varchar2(20)
+ ,emp_emergency_phone_no varchar2(20)
+ ,emp_DOB date 
+ ,emp_status varchar2(10)
+ ,emp_STREET VARCHAR2(30)
+ ,emp_CITY VARCHAR2(15)
+ ,emp_STATE VARCHAR2(2)
+ ,emp_ZIP NUMBER
+ ,emp_supervisor varchar2(30)
+ ,branch_no not null constraint employees_prod_fk references branch (branch_no)
+ ,position_no not null constraint employees_prods_fk references employee_position (position_no)
+);
+
+Insert into employees values	(2,'Jade','james','F','	10-Jun-18	','	6-May-17	', '345-456-6754','245-456-6677','345-876-8887','	10-Jun-16	','Active','234 James ave','MANKATO','MN',56001,'david ',100,11);
+Insert into employees values	(3,'Jadan','wade','F','	4-Sep-17	','	7-May-17	','345-456-6755','245-456-6678','345-876-8888','	11-Jun-16	','Active','21 Johnson ave','MANKATO','MN',56201,'joe',100,12);
+Insert into employees values	(4,'king','david','F','	5-Aug-17	',	'8-May-17	','345-456-6756','245-456-6679','345-876-8889','	12-Jun-16	','Active','236 James ave','MANKATO','MN',56301,'jinsely',100,13);
+Insert into employees values	(5,'david','suzan','F','	6-Jun-17	',	'9-Sep-17	','345-456-6757','245-456-6680','345-876-8890','	13-Mar-16	','Active','237 James ave','MANKATO','MN',53001,'obat',100,14);
+Insert into employees values	(6,'joe','noran','F','	7-Jul-17	',	'10-May-17	','345-456-6758','245-456-6681','345-876-8891','	14-Jan-16	','Active','238 James ave','MANKATO','MN',56301,'lucky',100,15);
+Insert into employees values	(7,'jinsely','thomas','F','	8-May-17	','	11-May-17	','345-456-6759','245-456-6682','345-876-8892','	15-Jan-16	','Active','239 James ave','MANKATO','SD',56001,'hazard',100,15);
+Insert into employees values	(8,'obat','wu','F','	9-Jun-17	',	'12-May-17	','345-456-6760','245-456-6683','345-876-8893','	16-Jun-16	','Active','45 honda  st','MANKATO','SD',560401,'kelly',100,15);
+Insert into employees values	(9,'lucky','blaine','F','	10-Jun-17	','	13-May-17	','345-456-6761','245-456-6684','345-876-8894','	17-Jun-16	','Active','241 James ave','MANKATO','SD',56001,'johnson',100,15);
+Insert into employees values	(10,'hazard','julie','M','	11-Jun-17	','	14-May-17	','345-456-6762','245-456-6685','345-876-8895','	18-Jun-16	','Active','52 toldeo ave','MANKATO','SD',56001,'steve',100,15);
+Insert into employees values	(11,'kelly','edward','M','	12-Jun-17	','	15-Nov-17	','345-456-6763','245-456-6686','345-876-8896','	19-Jun-16	','Active','243 James ave','MANKATO','ND',56001,'halle',101,15);
+Insert into employees values	(12,'johnson','jenson','M','	13-Jun-17	','	16-Oct-17	','345-456-6764','245-456-6687','345-876-8897','	20-Jun-16	','Active','244 James ave','MANKATO','ND',56001,'blank',101,15);
+Insert into employees values	(13,'steve','jud','M','	14-Jan-17	',	'17-May-17	','345-456-6765','245-456-6688','345-876-8898','	21-Apr-16	','Active','245 James ave','MANKATO','NJ',56001,'lee',101,15);
+Insert into employees values	(14,'halle','rudy','M','	15-Feb-17	',	'18-Dec-17	','345-456-6766','245-456-6689','345-876-8899','	22-May-16	','Active','246 James ave','MANKATO','NJ',56001,'dan',101,15);
+Insert into employees values	(15,'blank','tina','M','	16-Jun-17	',	'19-Mar-17	','345-456-6767','245-456-6690','345-876-8900','	23-Jul-16	','Not-Active','247 James ave','MANKATO','NJ',56001,'bill',101,15);
+Insert into employees values	(16,'lee','albert','M','	17-Mar-17	',	'20-Jun-17	','345-456-6768','245-456-6691','345-876-8901','	24-Aug-16	','Not-Active','248 James ave','PLYMOUTH','NJ',56001,'marry',101,15);
+Insert into employees values	(17,'dan','temi','M','	18-Apr-17	','	21-May-17	','345-456-6769','245-456-6692','345-876-8902','	25-Sep-16	','Not-Active','249 James ave','PLYMOUTH','NY',56001,'adam',101,14);
+Insert into employees values	(18,'bill','mia','M','	19-Jun-17	','	22-Apr-17	','345-456-6770','245-456-6693','345-876-8903','	26-Jun-16	','Not-Active','250 James ave','PLYMOUTH','NY',56001,'rose',101,14);
+Insert into employees values	(19,'marry','johnson','M','	20-Jun-17	',	'23-May-17	','345-456-6771','245-456-6694','345-876-8904','	27-Oct-16	','Not-Active','251 James ave','PLYMOUTH','NY',56001,'roselyn',101,14);
+Insert into employees values	(20,'adam','david','M','	21-Jun-17	',	'24-May-17	','345-456-6772','245-456-6695','345-876-8905','	28-Nov-16	','Not-Active','252 James ave','PLYMOUTH','NY',56001,'jack',102,14);
+Insert into employees values	(21,'rose','king','M','	22-Jun-17	','	25-May-17	','345-456-6773','245-456-6696','345-876-8906','	29-Jun-16	','Not-Active','253 James ave','PLYMOUTH','NY',56001,'han',102,14);
+Insert into employees values	(22,'roselyn','noran','M','	23-Dec-17	',	'26-Mar-17	','345-456-6774','245-456-6697','345-876-8907','	30-Dec-16	','Not-Active','254 James ave','PLYMOUTH','NY',56601,'fasia',102,14);
+Insert into employees values	(23,'jack','joe','F','	24-Jun-17	',	'27-May-17	','345-456-6775','245-456-6698','345-876-8908','	1-Jul-16	','Not-Active','255 James ave','PLYMOUTH','NY',56001,'hitler',104,14);
+Insert into employees values	(24,'han','lucky','F','	25-Nov-17	','	28-May-17	','345-456-6776','245-456-6699','345-876-8909','	2-Jul-16	','Not-Active','256 James ave','PLYMOUTH','NY',36001,'james',104,14);
+Insert into employees values	(25,'fasia','kelly','F','	26-Jun-17	',	'29-May-17	','345-456-6777','245-456-6700','345-876-8910','	3-Jul-16	','Not-Active','257 James ave','Brooklyn','NY',56001,'james',104,11);
+Insert into employees values	(26,'hitler','lee','F','	27-Jun-17	',	'30-May-17	','345-456-6778','245-456-6701','345-876-8911','	4-Jul-16	','Not-Active','258 James ave','Brooklyn','NY',66001,'james',105,11);
+Insert into employees values	(27,'james','steve','F','	28-Jun-17	',	'31-May-17	','345-456-6779','245-456-6702','345-876-8912','	5-Jul-16	','Active','259 James ave','Brooklyn','NY',53401,'james',105,11);
+Insert into employees values	(28,'hank','adam','F','	29-Jun-17	',	'1-Jun-17	','345-456-6780','245-456-6703','345-876-8913','	6-Jul-16	','Active','260 James ave','Brooklyn','NY',55601,'james',105,11);
+Insert into employees values	(29,'migos','dan','F','	30-Jun-17	',	'2-Jun-17	','345-456-6781','245-456-6704','345-876-8914','	7-Jul-16	','Active','261 James ave','Brooklyn','NY',76701,'james',109,11);
+Insert into employees values	(30,'brandton','monk','F','	1-Jul-17	',	'3-Jun-17	','345-456-6782','245-456-6705','345-876-8915','	8-Jul-16	','Active','262 James ave','Brooklyn','NY',57801,'james',109,11);
+
+CREATE TABLE event
+(evno integer primary key
+ ,ev_name varchar2(30)
+ ,ev_season varchar2(30)
+ ,ev_start_date DATE
+ ,ev_end_date DATE
+ ,ev_location varchar2(30)
+ ,ev_participant_limit NUMBER
+ ,ev_description varchar2(50)
+ ,pno not null constraint event_prod_fk references products (pno)
+ ,eno not null constraint event_prods_fk references employees (eno)
+);
+
+Insert into event values  (1100, 'Snowshoe Lacing Workshop',	'winter','6-May-17',	'7-Jul-17',	'Main Building', 200,	'Hiking', 'P130', 8);
+Insert into event values  (1130,'Beavers in Winter',	'winter', '6-Jun-17', '8-Oct-17',  'Park Place', 100	,'Hiking', 'P140' , 2);
+Insert into event values  (1106, 'Feeling Full Hike',	'spring', '7-Aug-17',	'9-May-17', 'Main Building',	150,	'Hiking' ,'P120', 4);
+Insert into event values (11440, 'Turkey Hike', 'winter', '3-Aug-17',	'10-Feb-17',	'Main Building', 300, 'Hiking',	'P120',	 6);
+Insert into event values (1150, 'Bison Tales',	'fall',	'9-Mar-17', '11-May-17', 'Main Building', 240,	'Bicycling', 	'P122',	 7);
+
+
+create table customers 
+( cno integer      primary key 
+, cust_fname       varchar2(20) 
+, cust_lname       varchar2(20) 
+, cust_sex         varchar2(1) 
+, Cust_street      varchar2(40)
+, cust_city	   varchar2(20)
+, cust_state       varchar2(2)
+, cust_zipcode number(11)
+, cust_DOB date
+, discount_status varchar2(20)
+, evno constraint customers_prod_fk references event (evno)
+);
+
+Insert into customers values	('100','Johnson','Roerig','M','656 Monks ave','Mankato','MN',56001,'	6-May-76	','Discount Not Enabled', 1100);
+Insert into customers values	('103','Lee','Jensen','M','76 Reagent ave','Brooklyn Park','MN',55443,'	7-May-76	','Discount Not Enabled', 1130);
+Insert into customers values	('102','Lee','Julie','F','64 lakes road','Edna','MN',54733,'	8-May-76	','Discount Not Enabled', 1106);
+Insert into customers values	('101','Watson','Al','M','68 James ave','Queens','NY',65839,'	9-May-76	','Discount Enabled', 11440);
+Insert into customers values	('104','Jenkins','Molly','F','99 Hans road','San Diego','CA',66548,'	10-May-76	','Discount Not Enabled', 1150);
+Insert into customers values	('105','Halle','Edward','M','976 Clark ave','Salt Lake','NY',63478,'	11-May-76	','Discount Enabled', 1100);
+Insert into customers values	('106','Dan','julie','M','305 Chenwoode circle','James town','NY',89701,'	12-May-76	','Discount Not Enabled', 1130);
+Insert into customers values	('107','Abbas','Rahim S.','M','312 E. Allen Road','Denton','TX',44538,'	13-May-76	','Discount Not Enabled', 1150);
+Insert into customers values	('108','Warren','steve','M','1200 Circle drive','Mason','WI',38201,'	14-May-76	','Discount Enabled', 1106);
+Insert into customers values	('109','Blank','Mary','F','58 Main Street ','Boise','MT',76332,'	15-May-76	','Discount Not Enabled', 1100);
+
+
+create table feedbacks (
+feedNo integer primary key
+ ,date_assessed DATE
+ ,feedback_question varchar2(50)
+ ,feedback_response varchar2(50)
+ ,evno not null constraint feedback_prod_fk references event (evno)
+);
+
+Insert into Feedbacks values	(701,'	15-Feb-17	','What do you like most about the event','Lively and Social',1100);
+Insert into Feedbacks values	(702,'	16-Jun-17	','Will you recommend the event to a friend (Y/N)','Y',1130);
+Insert into Feedbacks values	(703,'	17-Mar-17	','Is the event time too long (Y/N)','Y',1106);
+Insert into Feedbacks values	(704,'	18-Apr-17	','Is the event programs enjoyable(Y/N)','Y',1150);
+Insert into Feedbacks values	(705,'	19-Jun-17	','Is the event time a good timing (Y/N)','N',1130);
+Insert into Feedbacks values	(706,'	20-Jun-17	','Will you be attending the event next season (Y/N)','Y',11440);
+
+
+create table orders 
+( ono integer primary key
+, cust_order_date  date 
+, cust_ship_date   date 
+, eno not null constraint orders_emp_fk references employees (eno)
+, cno not null constraint orders_cust_fk references customers (cno) 
+, order_qty number(30) 
+, prod_price number(20,2)
+)
+;
+
+Insert into orders values	('1007','	27-Apr-99	','	2-May-99	','14','100',90,55);
+Insert into orders values	('1065','	2-May-99	','	7-May-99	','15','100',2,400);
+Insert into orders values	('1032','	1-May-99	','	6-May-99	','14','103',50,200);
+Insert into orders values	('1064','	2-May-99	','	9-May-99	','15','102',2,50);
+Insert into orders values	('10607','	2-May-99	','	9-May-99	','15','102',22,200);
+Insert into orders values	('10311','	2-May-99	','	9-May-99	','15','102',2,400);
+Insert into orders values	('1067','	7-Jan-00	','	12-Jan-00	','14','101',70,50);
+Insert into orders values	('1077','	7-Jan-00	','	12-Jan-00	','14','101',17,75);
+Insert into orders values	('1080','	7-Jan-00	','	12-Jan-00	','14','101',16,125);
+Insert into orders values	('1076','	7-Jan-00	','	12-Jan-00	','14','101',4,1295);
+Insert into orders values	('1054','	7-Jan-00	','	12-Jan-00	','14','101',14,1195);
+Insert into orders values	('1055','	7-Jan-00	','	12-Jan-00	','14','101',13,50);
+Insert into orders values	('1043','	7-Jan-00	','	12-Jan-00	','14','101',12,50);
+Insert into orders values	('1013','	7-Jan-00	','	12-Jan-00	','14','101',11,55);
+Insert into orders values	('1053','	7-Jan-00	','	12-Jan-00	','14','101',10,200);
+Insert into orders values	('1021','	7-Jan-00	','	12-Jan-00	','14','101',19,400);
+Insert into orders values	('1026','	30-Apr-99	','	5-May-99	','12','101',55,50);
+Insert into orders values	('1025','	29-Apr-99	','	4-May-99	','13','104',30,75);
+Insert into orders values	('1023','	3-Mar-99	','	7-Mar-99	','16','105',23,400);
+Insert into orders values	('1027','	6-Apr-99	','	9-Apr-99	','16','105',45,55);
+Insert into orders values	('1001','	7-Apr-99	','	10-Apr-99	','14','101',7,20);
+Insert into orders values	('1002','	8-Apr-99	','	11-Apr-99	','16','102',4,18);
+Insert into orders values	('1003','	9-Apr-99	','	12-Apr-99	','13','105',10,200);
+Insert into orders values	('1004','	10-Apr-99	','	13-Apr-99	','14','102',9,250);
+Insert into orders values	('1005','	11-Apr-99	','	14-Apr-99	','15','102',2,345);
+Insert into orders values	('1006','	12-Apr-99	','	15-Apr-99	','15','101',2,345);
+Insert into orders values	('1011','	13-Apr-99	','	16-Apr-99	','16','105',56,365);
+Insert into orders values	('1008','	14-Apr-99	','	17-Apr-99	','14','102',3,345);
+Insert into orders values	('1009','	15-Apr-99	','	18-Apr-99	','15','102',2,345);
+Insert into orders values	('1010','	16-Apr-99	','	19-Apr-99	','13','101',5,250);
+
+
+
+create table orderline
+(ordlino integer primary key
+ ,pno not null constraint orderline_prod_fk references products (pno) 
+ ,ono not null constraint orderline_ords_fk references orders (ono)
+);
+
+
+
+
+
+
+Insert into orderline values (71, 'P130', 1007);
+Insert into orderline values (76, 'P110',	1065);
+Insert into orderline values (73,	'P120',	1067);
+Insert into orderline values (74,	'P190',	1023);
+Insert into orderline values (75,	'P122',	1004);
+
+
+
+
+
+
+
+
+
+
