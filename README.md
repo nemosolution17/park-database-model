@@ -1,5 +1,5 @@
 # park-database
-Sales Database for a Mississippi National River and Recreation Area Minnesota Park usin MYSQL
+Sales Database for a Mississippi National River and Recreation Area Minnesota Park usin MySQL
 ## Park Description
 Mississippi River and Recreation Area is a 72 mile river park, established in 1988. Mississippi River is an iconic river and it is recognized as one of the world’s largest rivers and most complex floodplain river ecosystems on the planet. Historically, the river serves as important trade route in North American Continent. The river is used by Native Americans for trade, food, water long before Europeans visited the New World. The river is a major contributor to the ecology, culture, politics and economy of the United States.
 There are wide range of activities available for the park visitors. Some of these activities are:
